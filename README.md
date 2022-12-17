@@ -57,6 +57,11 @@ Remasterd GUI based version of [Quantum-Tunneling-Security](https://github.com/E
  
  * Option to change the standared output directory
  * The programm creates a folder at "C:\ProgramData\Quantum-Tunneling-Security-Reloaded"
+ * .exe was compilled with "Pyinstaller"
+ 
+ ## Releases
+ 
+ * Version 1.0 can be found [here](https://github.com/Eisblume-2000/Quantum-Tunneling-Security-Reloaded/releases/tag/v1)
  
  ## TODO list
  
@@ -66,6 +71,7 @@ Remasterd GUI based version of [Quantum-Tunneling-Security](https://github.com/E
  * Fix bugs
  * Improve my grammar and spelling (English isn't my native language)
  * Add crashlog feature
+ * Get icon for .exe file
  
  ## Issues
  
