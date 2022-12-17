@@ -14,9 +14,6 @@ from cryptography.fernet import Fernet
 import webbrowser
 from random import shuffle
 
-#TODO: Zipfile scanner
-#TODO: make pwd gen single function
-#TODO: FIle encryption/decryption
 #TODO: Encrypted Local Chat
 #TODO: error handling like no salt or pwd
 #TODO: get file name
@@ -503,8 +500,8 @@ class StartGUI:
         self.buttonzip.grid(row=1, column=0)
 
         # Button for one time decryption
-        self.buttononetimedecrypt = tk.Button(self.buttonframe1, text="One time decryption", fg="#c7c6c3", font=("Arial", 15), width=30, height=2, bg="#3c3d42",
-        command=lambda: OperationGUI("One time decryption", "One time decryption", "Pls select a file to decrypt", "fileinput", "Select file", True, 1, "Decrypt", None, "one_time_decryption", None))
+        self.buttononetimedecrypt = tk.Button(self.buttonframe1, text="One-Time-Decryption", fg="#c7c6c3", font=("Arial", 15), width=30, height=2, bg="#3c3d42",
+        command=lambda: OperationGUI("One-Time-Decryption", "One-Time-Decryption", "Pls select a file to decrypt", "fileinput", "Select file", True, 1, "Decrypt", None, "one_time_decryption", None))
         self.buttononetimedecrypt.grid(row=1, column=1)
 
         # Button for secure local chat
