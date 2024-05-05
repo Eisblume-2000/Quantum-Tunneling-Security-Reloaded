@@ -1,5 +1,6 @@
 import base64
 import pathlib
+import random
 import tkinter as tk
 from tkinter import filedialog
 import hashlib
@@ -13,11 +14,16 @@ from datetime import datetime
 from cryptography.fernet import Fernet
 import webbrowser
 from random import shuffle
+from screeninfo import get_monitors
+
+#TODO holy shit add fuzcking lines it has been 6 months how am i supposed to know what these todos mean?
 
 #TODO: Encrypted Local Chat
 #TODO: error handling like no salt or pwd
 #TODO: get file name
-#TODO: fix code so no spaces are in pwds
+#TODO: text encryption realtime
+#TODO make it so main menu doesnt go in foreground when selecting file, maybe minimize and maximize when opening new window or closing, use global vari to stop min max switch
+#TODO switch kill buttons to command kill maybe?
 
 class SettinsGUI:
 
@@ -31,21 +37,27 @@ class SettinsGUI:
         self.welcomelabel = tk.Label(self.SettinsGUI, text="Here you can change your settings", fg="#c7c6c3", font=("Arial", 20), bg="#202124")
         self.welcomelabel.place(y=50, relx=0.5, anchor="center", width=700)
 
-        self.settingslabel1 = tk.Label(self.SettinsGUI, text="Output Directory for files", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
-        self.settingslabel1.place(y=125, relx=0.5, anchor="center", width=700)
-
         r = open(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json", "r")
-        self.currentoutput = r.read()
-        r.read()
+        self.config = r.read()
+        r.close()
 
-        self.currentoutput = tk.Label(self.SettinsGUI, text="Current output directory : \n" + self.currentoutput, fg="#c7c6c3", font=("Arial", 12), bg="#202124")
-        self.currentoutput.place(y=175, relx=0.5, anchor="center", width=700)
+        self.config = json.loads(self.config)
+        self.outputdir = self.config["Outputdir"]
+        self.Apikey = self.config["QApiKey"]
 
-        self.outputentry = tk.Button(self.SettinsGUI, text="New Directory", fg="#c7c6c3", font=("Arial", 12), width=30, height=2, bg="#3c3d42", command=self.new_directory)
-        self.outputentry.place(y=235, relx=0.5, anchor="center", width=250)
+        self.currentoutput = tk.Label(self.SettinsGUI, text="Current output directory", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
+        self.currentoutput.place(y=150, relx=0.5, anchor="center", width=700)
 
-        self.newoutput = tk.Label(self.SettinsGUI, text="New output directory : \n", fg="#c7c6c3", font=("Arial", 12), bg="#202124")
-        self.newoutput.place(y=295, relx=0.5, anchor="center", width=700)
+        self.currentoutput_entry = tk.Entry(self.SettinsGUI, fg="#c7c6c3", bg="#3c3d42", font=("Arial", 15), width=30)
+        self.currentoutput_entry.insert(0, self.outputdir)
+        self.currentoutput_entry.place(y=225, relx=0.5, anchor="center", width=400)
+
+        self.apikey_label = tk.Label(self.SettinsGUI, text="API Key for Quantum Passwords", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
+        self.apikey_label.place(y=300, relx=0.5, anchor="center", width=700)
+
+        self.apikey_entry = tk.Entry(self.SettinsGUI, fg="#c7c6c3", bg="#3c3d42", font=("Arial", 20), width=30)
+        self.apikey_entry.insert(0, self.Apikey)
+        self.apikey_entry.place(y=375, relx=0.5, anchor="center", width=400)
 
         self.buttonframe1 = tk.Frame(self.SettinsGUI)
         self.buttonframe1.columnconfigure(0, weight=1)
@@ -61,25 +73,31 @@ class SettinsGUI:
 
         self.SettinsGUI.mainloop()
 
-    def new_directory(self):
-        self.nnew_directory = tk.filedialog.askdirectory()
-        self.newoutput = tk.Label(self.SettinsGUI, text="New output directory : \n" + str(self.nnew_directory), fg="#c7c6c3", font=("Arial", 12), bg="#202124")
-        self.newoutput.place(y=295, relx=0.5, anchor="center", width=700)
-
     def back(self):
         self.SettinsGUI.destroy()
 
     def save(self):
-        r = open(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json", "w")
-        r.write(self.nnew_directory)
-        r.close()
+        self.outputdir = str(self.currentoutput_entry.get())
+        self.Apikey = str(self.apikey_entry.get())
 
+        self.config["Outputdir"] = self.outputdir
+        self.config["QApiKey"] = self.Apikey
+
+        self.config = json.dumps(self.config)
+
+        r = open(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json","w")
+        r.write(self.config)
+        r.close()
 
 class OperationGUI:
 
     def __init__(self, currentoperation, label1text, prompt1text, filedialog_or_text_input, filedialog_button_text, second_input_row, numofbutton,button1, button2, button1_command, button2_command):
+
         self.OperationGUI = tk.Tk()
-        self.OperationGUI.geometry("900x800")
+        if "DISPLAY2" in str(get_monitors()):
+            self.OperationGUI.geometry("900x800+" + str(random.randint(1940, 2900)) + "+" + str(random.randint(0, 200)))
+        else:
+             self.OperationGUI.geometry("900x800+900+" + str(random.randint(0,200)))
         self.OperationGUI.resizable(0, 0)
         self.OperationGUI.title(currentoperation)
         self.OperationGUI['background'] = '#202124'
@@ -133,7 +151,7 @@ class OperationGUI:
 
         button1_command = "self." + button1_command
 
-        self.buttonvar1 = tk.Button(self.buttonframe1, text=button1, fg="#c7c6c3", font=("Arial", 15), width=20, height=2, bg="#3c3d42", command=eval(button1_command) )
+        self.buttonvar1 = tk.Button(self.buttonframe1, text=button1, fg="#c7c6c3", font=("Arial", 15), width=20, height=2, bg="#3c3d42", command=eval(button1_command))
         self.buttonvar1.grid(row=0, column=0)
 
         if numofbutton == 2:
@@ -225,7 +243,7 @@ class OperationGUI:
             self.outputprompt.place(y=585, relx=0.5, anchor="center")
 
     def atmospheric_noise(self):
-        characters = [char for char in '0123456789ABCDEFSTUVWXYZabcdefghijtuvwxyz!"$%&/)(=?\ß@€ + *#-_.:, ;']
+        characters = [char for char in '0123456789ABCDEFSTUVWXYZabcdefghijtuvwxyz!"$%&/)(=?\ß@€+*#-_.:,;']
 
         url = "https://www.random.org/quota/?format=plain"
         quota = int(requests.get(url).text)
@@ -250,7 +268,7 @@ class OperationGUI:
                 characters1 = '0123456789'
                 characters2 = 'ABCDEFSTUVWXYZ'
                 characters3 = 'abcdefghijtuvwxyz'
-                characters4 = '!"$%&/)(=?\ß@€ + *#-_.:, ;'
+                characters4 = '!"$%&/)(=?\ß@€+*#-_.:,;'
 
                 if any(char in pwd for char in characters1):
                     if any(char in pwd for char in characters2):
@@ -269,45 +287,61 @@ class OperationGUI:
                     self.atmospheric_noise()
 
             elif length.isnumeric() == False:
-                self.outputprompt = tk.Text(self.OperationGUI, height=10, borderwidth=0, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
-                self.outputprompt.insert(1.0, "Pls select a correct number")
+                self.outputprompt = tk.Label(self.OperationGUI, text= "Pls select a correct number", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
                 self.outputprompt.place(y=585, relx=0.5, anchor="center")
 
         elif quota <= 1000:
-            self.outputprompt = tk.Text(self.OperationGUI, height=10, borderwidth=0, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
-            self.outputprompt.insert(1.0, "Your ip adress got throttled, pls select another methode")
+            self.outputprompt = tk.Label(self.OperationGUI, text= "Your ip adress got throttled, pls select another methode", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
             self.outputprompt.place(y=585, relx=0.5, anchor="center")
 
     def quantum_fluctuations(self):
-        characters = [char for char in '0123456789ABCDEFSTUVWXYZabcdefghijtuvwxyz!"$%&/)(=?\ß@€ + *#-_.:, ;']
+        characters = [char for char in '0123456789ABCDEFSTUVWXYZabcdefghijtuvwxyz!"$%&/)(=?\ß@€+*#-_.:,;']
         characters *= 1024
 
-        def get_random_numbers(length):
-            respons = requests.get(f'https://qrng.anu.edu.au/API/jsonI.php?length={length}&type=uint16').text
+        def get_random_numbers(length, Apikey):
+            params = {"length": length, "type": "uint16"}
+            respons = requests.get("https://api.quantumnumbers.anu.edu.au/", headers={"x-api-key": Apikey}, params=params).text
+
+            try:
+                errormsg = json.loads(respons)["message"]
+                if errormsg == "Forbidden":
+                    self.outputprompt = self.outputprompt = tk.Label(self.OperationGUI, text="Invalid ApiKey", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
+                    self.outputprompt.place(y=585, relx=0.5, anchor="center")
+            except:
+                pass
+
             return json.loads(respons)['data']
+
 
         length = str(self.inputentry.get())
 
+        r = open(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json","r")
+        self.config = r.read()
+        r.close()
+
+        self.config = json.loads(self.config)
+        Apikey = self.config["QApiKey"]
+
         if length.isnumeric() == True:
-            length = int(self.inputentry.get())
-            pwd = ''
+            self.length = int(self.inputentry.get())
+            self.pwd = ''
             shuffle(characters)
-            numbers = get_random_numbers(length)
+            numbers = get_random_numbers(length, Apikey)
 
             for number in numbers:
-                pwd += characters[number]
+                self.pwd += characters[number]
 
             characters1 = '0123456789'
             characters2 = 'ABCDEFSTUVWXYZ'
             characters3 = 'abcdefghijtuvwxyz'
-            characters4 = '!"$%&/)(=?\ß@€ + *#-_.:, ;'
+            characters4 = '!"$%&/)(=?\ß@€+*#-_.:,;'
 
-            if any(char in pwd for char in characters1):
-                if any(char in pwd for char in characters2):
-                    if any(char in pwd for char in characters3):
-                        if any(char in pwd for char in characters4):
+            if any(char in self.pwd for char in characters1):
+                if any(char in self.pwd for char in characters2):
+                    if any(char in self.pwd for char in characters3):
+                        if any(char in self.pwd for char in characters4):
                             self.outputprompt = tk.Text(self.OperationGUI, height=10, borderwidth=0, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
-                            self.outputprompt.insert(1.0, pwd)
+                            self.outputprompt.insert(1.0, self.pwd)
                             self.outputprompt.place(y=585, relx=0.5, anchor="center")
                         else:
                             self.quantum_fluctuations()
@@ -319,8 +353,7 @@ class OperationGUI:
                 self.quantum_fluctuations()
 
         elif length.isnumeric() == False:
-            self.outputprompt = tk.Text(self.OperationGUI, height=10, borderwidth=0, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
-            self.outputprompt.insert(1.0, "Pls select a correct number")
+            self.outputprompt = self.outputprompt = tk.Label(self.OperationGUI, text= "Pls select a correct number", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
             self.outputprompt.place(y=585, relx=0.5, anchor="center")
 
     def file_encryption(self):
@@ -340,20 +373,24 @@ class OperationGUI:
             encrypteddata = f.encrypt(encryptiondata.encode())
 
             r = open("C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json", "r")
-            output_path = r.read()
+            self.config = r.read()
             r.close()
+
+            self.config = json.loads(self.config)
+            self.outputpath = self.config["Outputdir"]
 
             current_time = datetime.now()
             current_time = current_time.strftime("%H_%M_%S")
 
-            output_path = output_path + r"\file" + current_time
+            self.outputpath = self.outputpath + r"\file" + current_time
 
-            r = open(output_path, "w")
+            r = open(self.outputpath, "w")
             r.write(str(encrypteddata.decode()))
             r.close()
 
-            self.prompterror = tk.Label(self.OperationGUI, text="File encrypted and save to: " + "\n" + output_path, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
+            self.prompterror = tk.Label(self.OperationGUI, text="File encrypted and save to: " + "\n" + self.outputpath, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
             self.prompterror.place(y=585, relx=0.5, anchor="center", width=700)
+
 
         except AttributeError:
             self.prompterror = tk.Label(self.OperationGUI, text="Pls select a file", fg="#c7c6c3", font=("Arial", 15), bg="#202124")
@@ -373,22 +410,25 @@ class OperationGUI:
         r.close()
 
         try:
-            decrypteddata = f.decrypt(decryptiondata.encode())
-    
+            self.decrypteddata = f.decrypt(decryptiondata.encode())
+
             r = open("C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json", "r")
-            output_path = r.read()
-            r.close()
-    
-            current_time = datetime.now()
-            current_time = current_time.strftime("%H_%M_%S")
-    
-            output_path = output_path + r"\file" + current_time
-    
-            r = open(output_path, "w")
-            r.write(str(decrypteddata.decode()))
+            self.config = r.read()
             r.close()
 
-            self.prompterror = tk.Label(self.OperationGUI, text="File encrypted and save to: " + "\n" + output_path, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
+            self.config = json.loads(self.config)
+            self.outputpath = self.config["Outputdir"]
+
+            current_time = datetime.now()
+            current_time = current_time.strftime("%H_%M_%S")
+
+            self.outputpath = self.outputpath + r"\file" + current_time
+
+            r = open(self.outputpath, "w")
+            r.write(str(self.decrypteddata.decode()))
+            r.close()
+
+            self.prompterror = tk.Label(self.OperationGUI, text="File encrypted and save to: " + "\n" + self.outputpath, fg="#c7c6c3", font=("Arial", 15), bg="#202124")
             self.prompterror.place(y=585, relx=0.5, anchor="center", width=700)
 
         except cryptography.fernet.InvalidToken or cryptography.fernet.InvalidSignature:
@@ -453,7 +493,7 @@ class OperationGUI:
             self.prompterror.place(y=585, relx=0.5, anchor="center", width=700)
 
     def close(self):
-        exit()
+        quit()
 
     def back(self):
         self.OperationGUI.destroy()
@@ -463,7 +503,7 @@ class StartGUI:
 
     def __init__(self):
         self.StartGUI = tk.Tk()
-        self.StartGUI.geometry("1200x800")
+        self.StartGUI.geometry("1200x800+0+0")
         self.StartGUI.resizable(0, 0)
         self.StartGUI.title("Quantum-Tunneling-Security-Reloaded")
         self.StartGUI['background'] = '#202124'
@@ -486,7 +526,7 @@ class StartGUI:
 
         # Button for password generator
         self.buttonpwd = tk.Button(self.buttonframe1, text="Password-Generator", fg="#c7c6c3", font=("Arial", 15), width=30, height=2, bg="#3c3d42", 
-        command=lambda: OperationGUI("Password-Generator", "Password-Generator", "Pls enter desired password length", "textinput", None, False, 2, "atmospheric noise", "quantum fluctuations", "atmospheric_noise", "quantum_fluctuations"))
+        command=lambda: OperationGUI("Password-Generator", "Password-Generator", "Pls enter desired password length", "textinput", None, False, 2, "Atmospheric noise", "Quantum fluctuations", "atmospheric_noise", "quantum_fluctuations"))
         self.buttonpwd.grid(row=0, column=1)
 
         # Button for file encryption/decryption
@@ -545,7 +585,20 @@ if os.path.exists(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded") == Fals
 
 if os.path.exists(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json") == False:
     c = open(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json", "w")
-    c.write(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\Output")
+    c.write("{\"Outputdir\": \"C:/ProgramData/Quantum-Tunneling-Security-Reloaded/Output\", \"QApiKey\": \"\", \"Version\": \"1\"}")
     c.close()
+else:
+    r = open(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json","r")
+    config = r.read()
+    r.close()
+
+    config = json.loads(config)
+    version = config["Version"]
+
+    if version != 1:
+        c = open(r"C:\ProgramData\Quantum-Tunneling-Security-Reloaded\config.json", "w")
+        c.write(
+            "{\"Outputdir\": \"C:/ProgramData/Quantum-Tunneling-Security-Reloaded/Output\", \"QApiKey\": \"\", \"Version\": \"1\"}")
+        c.close()
 
 StartGUI()
