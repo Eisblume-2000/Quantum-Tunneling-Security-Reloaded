@@ -66,7 +66,7 @@ Remastered GUI based version of [Quantum-Tunneling-Security](https://github.com/
  ## Releases
  
  * Version 1.0 can be found [here](https://github.com/Eisblume-2000/Quantum-Tunneling-Security-Reloaded/releases/tag/v1)
- * Version 2.0 can be found [here](https://github.com/Eisblume-2000/Quantum-Tunneling-Security-Reloaded/releases/tag/v2)
+ * Version 1.1 can be found [here](https://github.com/Eisblume-2000/Quantum-Tunneling-Security-Reloaded/releases/tag/v1.1)
  
  ## Patchnotes
 
