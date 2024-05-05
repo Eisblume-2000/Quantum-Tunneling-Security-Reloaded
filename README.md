@@ -73,7 +73,8 @@ Remastered GUI based version of [Quantum-Tunneling-Security](https://github.com/
  * Added ApiKey Support to Quantum passwords, thus making the module usable again
  * The program can now use your second screen if you have one
  * The config file now is a real config file
- * The settings menu was reworked and now works properly 
+ * The settings menu was reworked and now works properly
+ * Switched from "pyinstaller" to "nuitka" for .exe compiling
 
  
  ## TODO list
